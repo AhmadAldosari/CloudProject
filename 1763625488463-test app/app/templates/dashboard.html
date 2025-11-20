@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Add Inventory Item</h5>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('dashboard.dashboard') }}">
+          <div class="mb-3">
+            <label class="form-label" for="name">Item Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Server Upgrade" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="quantity">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="0" value="0" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="price">Unit Price (USD)</label>
+            <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="99.99" required />
+          </div>
+          <div class="d-grid">
+            <button class="btn btn-primary" type="submit">Add Item</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Inventory</h5>
+        <span class="badge bg-secondary">{{ items|length }} items</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col" class="text-center">Quantity</th>
+              <th scope="col" class="text-end">Unit Price</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if items %}
+              {% for item in items %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td class="text-center">{{ item.quantity }}</td>
+                  <td class="text-end">${{ '%.2f'|format(item.price) }}</td>
+                  <td class="text-end">
+                    <form method="post" action="{{ url_for('dashboard.delete_item', item_id=item.id) }}" onsubmit="return confirm('Delete {{ item.name }}?');">
+                      <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">No items yet. Add your first record!</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
